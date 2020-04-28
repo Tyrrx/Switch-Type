@@ -7,16 +7,15 @@ type ResultType<T> = Success<T> | Failure<T> | Result<T>;
 export class Result<T> {
     protected isSuccess: boolean;
 
-    // @ts-ignore
-    public match(okFunc: (value: T) => void, errorFunc: (error: string) => void): void {
-        this.match((v) => okFunc(v), (e) => errorFunc(e));
+    public matchVoid(success: (value: T) => void, failure: (error: string) => void): void {
+        this.match((v) => success(v), (e) => failure(e));
     }
-    // @ts-ignore
-    public match<T1>(okFunc: (value: T) => T1, errorFunc: (error: string) => T1): T1 {
+
+    public match<T1>(success: (value: T) => T1, failure: (error: string) => T1): T1 {
         if (this.isSuccess) {
-            return okFunc(this.toSuccess().value);
+            return success(this.toSuccess().value);
         } else {
-            return errorFunc(this.toFailure().message);
+            return failure(this.toFailure().message);
         }
     }
 
@@ -51,7 +50,7 @@ export class Result<T> {
     private concat(others: Array<Result<any>>): Array<Result<any>> {
         const arr = new Array<Result<any>>();
         arr.push(this);
-        others.forEach((e) => arr.push(e))
+        others.forEach((e) => arr.push(e));
         return arr;
     }
 }
